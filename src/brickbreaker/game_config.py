@@ -1,0 +1,5 @@
+WIDTH: int = 1024;  # pixels
+HEIGHT: int = 768;  # pixels
+
+WORLD_WIDTH: float = 2;  # world units
+WORLD_HEIGHT: float = 2;  # world units
