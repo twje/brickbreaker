@@ -60,3 +60,6 @@ class ShapeRenderer:
             self.renderer.vertex(x + width, y + height, 0)
             self.renderer.vertex(x, y + height, 0)
             self.renderer.vertex(x, y, 0)
+
+    def dispose(self):  # implement
+        pass

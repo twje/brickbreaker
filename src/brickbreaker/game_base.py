@@ -25,7 +25,7 @@ class GameBase(ApplicationListener):
 
     def pause(self):
         if self.current_screen is not None:
-            self.current_screen.pause.render()
+            self.current_screen.pause()
 
     def render(self, delta):
         if self.current_screen is not None:

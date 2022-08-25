@@ -1,5 +1,6 @@
 from .application_listener import ApplicationListener
 from .window import Window
+from .clock import Clock
 from .gdx import Gdx, Graphics
 
 
@@ -11,6 +12,7 @@ class Application:
         super().__init__()
         self.listener = listener
         self.window = Window(self, width, height, title)
+        self.clock = Clock()
 
         # global
         Gdx.graphics = Graphics(self.window)
@@ -22,9 +24,9 @@ class Application:
             self.render()
         self.destroy()
 
-    def render(self):
+    def render(self):        
         self.window.begin_render()
-        self.listener.render(0)
+        self.listener.render(self.clock.delta)
         self.window.end_render()
 
     def create(self):

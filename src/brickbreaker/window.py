@@ -77,7 +77,7 @@ class Window:
         glfw.terminate()
 
     def update(self):
-        glfw.poll_events()
+        glfw.poll_events()        
 
     def begin_render(self):
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT) 
