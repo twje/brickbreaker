@@ -42,7 +42,8 @@ class FitViewport:
         )
         self.camera.viewport_width = self.world_width
         self.camera.viewport_height = self.world_height
-        # if (centerCamera) camera.position.set(worldWidth / 2, worldHeight / 2, 0);
+        if center_camera:
+            self.camera.set_position(self.world_width/2, self.world_height/2)
         self.camera.update()
 
     def set_screen_bounds(self, screen_x: int, screen_y: int, screen_width: int, screen_height: int):

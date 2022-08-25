@@ -17,6 +17,10 @@ class GameRenderer:
         self.renderer = ShapeRenderer()
 
         self.debug_camera_controller = DebugCameraController()
+        self.debug_camera_controller.set_start_position(
+            game_config.WORLD_CENTER_X,
+            game_config.WORLD_CENTER_Y
+        )
 
     def resize(self, width: int, height: int):
         self.viewport.update(width, height, True)
@@ -31,7 +35,7 @@ class GameRenderer:
         self.renderer.end()
 
     def draw_debug(self):
-        self.renderer.rect(-0.5, -0.5, 1, 1)
+        self.renderer.rect(0.5, 0.5, 1, 1)
 
     def dispose(self):
         self.renderer.dispose()
