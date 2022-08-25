@@ -1,4 +1,3 @@
-from http import server
 from .immediate_mode_renderer import ImmediateModeRenderer
 from .shape_type import ShapeType
 from .gdx import Gdx
@@ -60,6 +59,10 @@ class ShapeRenderer:
             self.renderer.vertex(x + width, y + height, 0)
             self.renderer.vertex(x, y + height, 0)
             self.renderer.vertex(x, y, 0)
+
+    def line(self, x1: float, y1: float, x2: float, y2: float):
+        self.renderer.vertex(x1, y1, 0)
+        self.renderer.vertex(x2, y2, 0)
 
     def dispose(self):  # implement
         pass
