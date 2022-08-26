@@ -1,4 +1,3 @@
-from typing import Iterable
 from .immediate_mode_renderer import ImmediateModeRenderer
 from .shape_type import ShapeType
 from .gdx import Gdx
@@ -10,15 +9,8 @@ class ShapeRenderer:
 
     def __init__(self) -> None:
         self.shape_type = None
+        self.projection = None
         self.renderer = ImmediateModeRenderer(5000, False, True, 0)
-        self.projection = pyrr.matrix44.create_orthogonal_projection(
-            0,
-            Gdx.graphics.width,
-            0,
-            Gdx.graphics.height,
-            0,
-            1
-        )
 
     def set_projection_matrix(self, matrix):
         self.projection = matrix
@@ -32,9 +24,6 @@ class ShapeRenderer:
         assert self.shape_type is not None
         self.renderer.end()
         self.shape_type = None
-
-    def validate_begin_arguments(self):
-        pass
 
     def check(self, preferred: ShapeType, other: ShapeType, new_vertices: int):
         assert self.shape_type is not None

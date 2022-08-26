@@ -14,7 +14,7 @@ class ImmediateModeRenderer:
         self.vertices = np.zeros(max_vertices * 3, dtype=np.float32)
         self.num_vertices = 0
         self.proj_model_view = None
-        self.color_offset = 3
+        self.color_offset = 0
 
         # shader
         self.shader = Shader(
@@ -28,6 +28,7 @@ class ImmediateModeRenderer:
         self.vbo_layout.push_float(3, "a_position")
 
         if has_colors:
+            self.color_offset = self.vbo_layout.count
             self.vbo_layout.push_float(4, "a_color")
 
         # vao
