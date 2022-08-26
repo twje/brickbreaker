@@ -41,6 +41,7 @@ class GameRenderer:
 
     def draw_debug(self):
         self.renderer.rect(0.5, 0.5, 1, 1)
+        self.renderer.rect(0.5, 0.5, 1, 1)
 
     def dispose(self):
         self.renderer.dispose()

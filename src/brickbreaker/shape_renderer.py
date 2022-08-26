@@ -51,29 +51,43 @@ class ShapeRenderer:
         self.check(ShapeType.Line, ShapeType.Filled, 8)
         if self.shape_type == ShapeType.Line:
             # line 1
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x, y, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y, 0)
 
             # line 2
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y + height, 0)
 
             # line 3
+            self.renderer.color(1.0, 0.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y + height, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x, y + height, 0)
 
             # line 4
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x, y + height, 0)
+            self.renderer.color(1.0, 1.0, 0.0, 1.0)
             self.renderer.vertex(x, y, 0)
         else:
             # triangle 1
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x, y, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y + height, 0)
 
             # triangle 2
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x + width, y + height, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x, y + height, 0)
+            self.renderer.color(1.0, 1.0, 1.0, 1.0)
             self.renderer.vertex(x, y, 0)
 
     def line(self, x1: float, y1: float, x2: float, y2: float):
