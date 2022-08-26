@@ -40,3 +40,8 @@ class Shader:
 
         self.uniform_location_cache[name] = location
         return location
+
+    def get_attribute_location(self, name: str, layout_position: int):
+        if name is None:
+            return layout_position
+        return glGetAttribLocation(self.renderer_id, name)
