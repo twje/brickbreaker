@@ -31,5 +31,5 @@ class VertexArray:
     def unbind(self) -> None:
         glBindVertexArray(0)
 
-    def delete(self):
-        glDeleteVertexArrays(1, self.renderer_id)
+    def delete(self):        
+        glDeleteVertexArrays(1, [self.renderer_id])

@@ -18,4 +18,4 @@ class VertexBuffer:
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
     def delete(self):
-        glDeleteBuffers(1, self.m_RendererID)
+        glDeleteBuffers(1, [self.renderer_id])

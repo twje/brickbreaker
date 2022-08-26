@@ -32,7 +32,7 @@ class GameRenderer:
         self.render_debug()
 
     def render_debug(self):
-        viewport_utils.draw_grid(self.viewport, self.renderer)
+        #viewport_utils.draw_grid(self.viewport, self.renderer)
 
         self.renderer.set_projection_matrix(self.camera.combined)
         self.renderer.begin(ShapeRenderer.ShapeType.Line)

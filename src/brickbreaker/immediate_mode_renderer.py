@@ -33,6 +33,7 @@ void main()
 
 class ImmediateModeRenderer:
     def __init__(self, max_vertices: int, has_normals: bool, has_colors: bool, num_tex_coords: int) -> None:
+        self.max_vertices = max_vertices
         self.vertex_id = 0
         self.vertices = np.zeros(max_vertices * 3, dtype=np.float32)
         self.num_vertices = 0
@@ -81,3 +82,13 @@ class ImmediateModeRenderer:
 
         self.vertex_id += self.vbo_layout.count
         self.num_vertices += 1
+
+    def free_vertices_count(self):
+        return self.max_vertices - self.num_vertices
+
+    def dispose(self):
+        pass
+        self.vao.delete()
+        self.vbo.delete()
+        self.shader.delete()
+

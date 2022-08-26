@@ -1,3 +1,4 @@
+from typing import Iterable
 from .immediate_mode_renderer import ImmediateModeRenderer
 from .shape_type import ShapeType
 from .gdx import Gdx
@@ -32,7 +33,22 @@ class ShapeRenderer:
         self.renderer.end()
         self.shape_type = None
 
+    def validate_begin_arguments(self):
+        pass
+
+    def check(self, preferred: ShapeType, other: ShapeType, new_vertices: int):
+        assert self.shape_type is not None
+
+        if self.shape_type != preferred and self.shape_type != other:
+            self.end()
+            self.begin(preferred)
+        elif self.renderer.free_vertices_count() < new_vertices:
+            shape_type = self.shape_type
+            self.end()
+            self.begin(shape_type)
+
     def rect(self, x: float, y: float, width: float, height: float):
+        self.check(ShapeType.Line, ShapeType.Filled, 8)
         if self.shape_type == ShapeType.Line:
             # line 1
             self.renderer.vertex(x, y, 0)
@@ -61,8 +77,9 @@ class ShapeRenderer:
             self.renderer.vertex(x, y, 0)
 
     def line(self, x1: float, y1: float, x2: float, y2: float):
+        self.check(ShapeType.Line, None, 2)
         self.renderer.vertex(x1, y1, 0)
         self.renderer.vertex(x2, y2, 0)
 
-    def dispose(self):  # implement
-        pass
+    def dispose(self):
+        self.renderer.dispose()
