@@ -32,12 +32,15 @@ class ImmediateModeRenderer:
     COLOR_VARY = "v_color"
     VERTEX_ATTRIB = "a_texture"
     VERTEX_VARY = "v_texture"
+    POSITION_ATTRIB = "a_position"
 
     def __init__(self, max_vertices: int, has_colors: bool, has_texture: bool) -> None:
         self.has_colors = has_colors
         self.has_texture = has_texture
         self.max_vertices = max_vertices
         self.proj_model_view = None
+
+        # offsets
         self.vertex_offset = 0
         self.color_offset = 0
         self.texture_offset = 0
@@ -50,7 +53,7 @@ class ImmediateModeRenderer:
 
         # vbo layout
         self.vbo_layout = VertexBufferLayout()
-        self.vbo_layout.push_float(3, "a_position")
+        self.vbo_layout.push_float(3, self.POSITION_ATTRIB)
 
         # optional attributes
         if has_colors:
@@ -87,7 +90,7 @@ class ImmediateModeRenderer:
 
         return f"""
             #version 330 core
-            in vec4 a_position;
+            in vec4 {self.POSITION_ATTRIB};
             {color_attribute}
             {texture_attribute}
             {color_out}
@@ -95,7 +98,7 @@ class ImmediateModeRenderer:
             uniform mat4 u_projTrans;
             void main()
             {{
-                gl_Position = u_projTrans * a_position;
+                gl_Position = u_projTrans * {self.POSITION_ATTRIB};
                 {color_assign}
                 {texture_assign}
             }}
