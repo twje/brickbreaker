@@ -36,17 +36,14 @@ class Test(Screen):
         super().__init__()
 
     def show(self):
-        quad_vertices = [
+        vertices = np.array([
             -0.5, -0.5, 0, 0.0, 0.0,
             0.5, -0.5, 0, 1.0, 0.0,
             0.5,  0.5, 0, 1.0, 1.0,
             -0.5,  0.5, 0, 0.0, 1.0
-        ]
+        ], dtype=np.float32)
 
-        quad_indices = [0, 1, 2, 2, 3, 0]
-
-        quad_vertices = np.array(quad_vertices, dtype=np.float32)
-        self.quad_indices = np.array(quad_indices, dtype=np.uint32)
+        self.indices = np.array([0, 1, 2, 2, 3, 0], dtype=np.uint32)
 
         # quad vao
         self.quad_VAO = glGenVertexArrays(1)
@@ -55,19 +52,33 @@ class Test(Screen):
         # quad vbo
         quad_VBO = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, quad_VBO)
-        glBufferData(GL_ARRAY_BUFFER, quad_vertices.nbytes,
-                     quad_vertices, GL_STATIC_DRAW)
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            vertices.nbytes,
+            vertices,
+            GL_STATIC_DRAW
+        )
 
         # quad ebo
-        quad_EBO = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quad_EBO)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                          self.quad_indices.nbytes, self.quad_indices, GL_STATIC_DRAW)
+        ebo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+        glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            self.indices.nbytes,
+            self.indices,
+            GL_STATIC_DRAW
+        )
 
         # quad attribs
         glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                              quad_vertices.itemsize * 5, ctypes.c_void_p(0))
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            vertices.itemsize * 5,
+            ctypes.c_void_p(0)
+        )
 
         # shader
         self.shader_program = compileProgram(
@@ -89,4 +100,4 @@ class Test(Screen):
 
     def render(self, delta):
         glDrawElements(GL_TRIANGLES, len(
-            self.quad_indices), GL_UNSIGNED_INT, None)
+            self.indices), GL_UNSIGNED_INT, None)
