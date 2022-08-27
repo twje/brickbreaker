@@ -6,14 +6,39 @@ import numpy as np
 from OpenGL.GL import *
 
 
+class VertexCounter:
+    def __init__(self, vertex_element_count) -> None:
+        self.vertex_element_count = vertex_element_count
+        self.vertex_id = 0
+        self.num_vertices = 0
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc, exc_tb):
+        self.vertex_id += self.vertex_element_count
+        self.num_vertices += 1
+
+    def offset(self, value):
+        return self.vertex_id + value
+
+    def reset(self):
+        self.vertex_id = 0
+        self.num_vertices = 0
+
+
 class ImmediateModeRenderer:
+    COLOR_ATTRIB = "a_color"
+    COLOR_VARY = "v_color"
+    VERTEX_ATTRIB = "a_texture"
+    VERTEX_VARY = "v_texture"
+
     def __init__(self, max_vertices: int, has_colors: bool, has_texture: bool) -> None:
         self.has_colors = has_colors
         self.has_texture = has_texture
         self.max_vertices = max_vertices
-        self.vertex_id = 0
-        self.num_vertices = 0
         self.proj_model_view = None
+        self.vertex_offset = 0
         self.color_offset = 0
         self.texture_offset = 0
 
@@ -30,11 +55,13 @@ class ImmediateModeRenderer:
         # optional attributes
         if has_colors:
             self.color_offset = self.vbo_layout.count
-            self.vbo_layout.push_float(4, "a_color")
+            self.vbo_layout.push_float(4, self.COLOR_ATTRIB)
 
         if has_texture:
             self.texture_offset = self.vbo_layout.count
-            self.vbo_layout.push_float(2, "a_texture")
+            self.vbo_layout.push_float(2, self.VERTEX_ATTRIB)
+
+        self.vertex_counter = VertexCounter(self.vbo_layout.count)
 
         # vbo
         self.vertices = np.zeros(
@@ -49,14 +76,14 @@ class ImmediateModeRenderer:
 
     def create_vertex_shader(self, has_colors, has_texture):
         # color
-        color_attribute = "in vec4 a_color;" if has_colors else ""
-        color_out = "out vec4 v_color;" if has_colors else ""
-        color_assign = "v_color = a_color;" if has_colors else ""
+        color_attribute = f"in vec4 {self.COLOR_ATTRIB};" if has_colors else ""
+        color_out = f"out vec4 {self.COLOR_VARY};" if has_colors else ""
+        color_assign = f"{self.COLOR_VARY} = {self.COLOR_ATTRIB};" if has_colors else ""
 
         # texture
-        texture_attribute = "in vec2 a_texture;" if has_texture else ""
-        texture_out = "out vec2 v_texture;" if has_texture else ""
-        texture_assign = "v_texture = a_texture;" if has_texture else ""
+        texture_attribute = f"in vec2 {self.VERTEX_ATTRIB};" if has_texture else ""
+        texture_out = f"out vec2 {self.VERTEX_VARY};" if has_texture else ""
+        texture_assign = f"{self.VERTEX_VARY} = {self.VERTEX_ATTRIB};" if has_texture else ""
 
         return f"""
             #version 330 core
@@ -76,13 +103,13 @@ class ImmediateModeRenderer:
 
     def create_fragment_shader(self, has_colors, has_texture):
         # color
-        color_in = "in vec4 v_color;" if has_colors else ""
-        color_assign = "v_color;" if has_colors else "vec4(1.0, 1.0, 1.0, 1.0)"
+        color_in = f"in vec4 {self.COLOR_VARY};" if has_colors else ""
+        color_assign = f"{self.COLOR_VARY};" if has_colors else "vec4(1.0);"
 
         # texture
-        texture_in = "in vec2 v_texture;" if has_texture else ""
+        texture_in = f"in vec2 {self.VERTEX_VARY};" if has_texture else ""
         texture_sampler = "uniform sampler2D s_texture;" if has_texture else ""
-        texture_multiply = "out_color *= texture(s_texture, v_texture);" if has_texture else ""
+        texture_multiply = f"out_color *= texture(s_texture, {self.VERTEX_VARY});" if has_texture else ""
 
         return f"""
             #version 330 core
@@ -105,24 +132,25 @@ class ImmediateModeRenderer:
         self.flush()
 
     def flush(self):
-        if self.num_vertices == 0:
+        if self.vertex_counter.num_vertices == 0:
             return
 
         self.vao.bind()
         self.vbo.set_data(
             self.vertices,
-            self.num_vertices * self.vbo_layout.stride
+            self.vertex_counter.num_vertices * self.vbo_layout.stride
         )
 
         self.shader.set_uniform_mat4f("u_projTrans", self.proj_model_view)
-        glDrawArrays(self.primitive_type, 0, self.num_vertices)
+        glDrawArrays(self.primitive_type, 0, self.vertex_counter.num_vertices)
+        self.vertex_counter.reset()
 
-        self.vertex_id = 0
-        self.num_vertices = 0
+    def start_new_vertex(self):
+        return self.vertex_counter
 
     def color(self, r: float, g: float, b: float, a: float):
         assert self.has_colors
-        offset = self.vertex_id + self.color_offset
+        offset = self.vertex_counter.offset(self.color_offset)
         self.vertices[offset] = r
         self.vertices[offset + 1] = g
         self.vertices[offset + 2] = b
@@ -130,21 +158,18 @@ class ImmediateModeRenderer:
 
     def texture(self, u: float, v: float):
         assert self.has_texture
-        offset = self.vertex_id + self.texture_offset
+        offset = self.vertex_counter.offset(self.texture_offset)
         self.vertices[offset] = u
         self.vertices[offset + 1] = v
 
     def vertex(self, x: float, y: float, z: float):
-        idx = self.vertex_id
+        idx = self.vertex_counter.offset(self.vertex_offset)
         self.vertices[idx] = x
         self.vertices[idx + 1] = y
         self.vertices[idx + 2] = z
 
-        self.vertex_id += self.vbo_layout.count
-        self.num_vertices += 1
-
     def free_vertices_count(self):
-        return self.max_vertices - self.num_vertices
+        return self.max_vertices - self.vertex_counter.num_vertices
 
     def dispose(self):
         self.vao.delete()
