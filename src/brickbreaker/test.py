@@ -30,8 +30,7 @@ uniform sampler2D s_texture;
 
 void main()
 {    
-    out_color = texture(s_texture, v_texture);
-    // out_color = vec4(1.0, 1.0, 1.0, 1.0); 
+    out_color = texture(s_texture, v_texture);    
 }
 """
 
@@ -137,9 +136,18 @@ class Test(Screen):
         )
         glUseProgram(self.shader_program)
 
+        tex_loc = glGetUniformLocation(self.shader_program, "s_texture")
+
         # texture
-        self.texture = glGenTextures(1)
-        load_texture("textures/smiley.png", self.texture)
+        self.textures = glGenTextures(2)
+
+        glActiveTexture(GL_TEXTURE0)
+        tex1 = load_texture("textures/smiley.png", self.textures[0])
+
+        glActiveTexture(GL_TEXTURE1)
+        tex2 = load_texture("textures/cat.png", self.textures[1])
+
+        glUniform1i(tex_loc, 0)
 
         # toggle context state
         glEnable(GL_DEPTH_TEST)
@@ -148,7 +156,7 @@ class Test(Screen):
 
     def render(self, delta):
         glBindVertexArray(self.vao)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
+        #glBindTexture(GL_TEXTURE_2D, self.textures[0])
         glDrawElements(
             GL_TRIANGLES,
             len(self.indices),
