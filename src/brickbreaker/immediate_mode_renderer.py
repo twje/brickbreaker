@@ -78,6 +78,9 @@ class ImmediateModeRenderer:
         self.vao = VertexArray()
         self.vao.add_buffer(self.vbo, self.vbo_layout, self.shader)
 
+    def contains_vertices(self):
+        return self.vertex_counter.num_vertices > 0
+
     def create_vertex_shader(self, has_colors, has_texture):
         # color
         color_attribute = f"in vec4 {self.COLOR_ATTRIB};" if has_colors else ""
@@ -136,7 +139,7 @@ class ImmediateModeRenderer:
         self.flush()
 
     def flush(self):
-        if self.vertex_counter.num_vertices == 0:
+        if not self.contains_vertices():
             return
 
         self.vao.bind()

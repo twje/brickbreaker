@@ -1,84 +1,80 @@
-from .vertex_buffer_layout import VertexBufferLayout
-from .vertex_array import VertexArray
-from .vertex_buffer import VertexBuffer
-from .index_buffer import IndexBuffer
-from .shader import Shader
-import numpy as np
-from OpenGL.GL import *
-
-vertex_src = """
-#version 330 core
-
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec4 color;
-
-out vec4 v_Color;
-
-uniform mat4 u_projTrans;
-
-void main()
-{
-   gl_Position = u_projTrans * position;
-   v_Color = color;
-};
-"""
-
-fragment_src = """
-#version 330 core
-
-layout(location = 0) out vec4 color;
-
-in vec4 v_Color;
-
-void main()
-{	
-	color = v_Color;
-};
-"""
+from .immediate_mode_renderer import ImmediateModeRenderer
+from .shape_type import ShapeType
+from .color import Color
+from .texture import Texture
 
 
 class SpriteBatch:
     def __init__(self) -> None:
-        # data
-        positions = np.array([
-            -1.0, -1.0, 0.18, 0.6, 0.96, 1.0,
-            1.0, -1.0, 0.18, 0.6, 0.96, 1.0,
-            1.0,  1.0, 0.18, 0.6, 0.96, 1.0,
-            -1.0,  1.0, 0.18, 0.6, 0.0, 1.0,
-        ], dtype=np.float32)
-
-        indicies = np.array([
-            0, 1, 2,
-            2, 3, 0,
-        ], dtype=np.uint32)
-
-        # vbo
-        vbo = VertexBuffer(positions)
-        vbo_layout = VertexBufferLayout()
-        vbo_layout.push_float(2)
-        vbo_layout.push_float(4)
-
-        # vao
-        self.vao = VertexArray()
-        self.vao.add_buffer(vbo, vbo_layout)
-
-        # ibo
-        self.ibo = IndexBuffer(indicies)
-
-        # shader
-        self.shader = Shader(vertex_src, fragment_src)
+        self.projection = None
+        self.color = Color()
+        self.renderer = ImmediateModeRenderer(5000, True, True)
+        self.drawing = False
+        self.last_texture = None
 
     def set_projection_matrix(self, matrix):
-        self.shader.set_uniform_mat4f("u_projTrans", matrix)
+        self.projection = matrix
 
     def begin(self):
-        pass
+        assert not self.drawing
+        self.renderer.begin(self.projection, ShapeType.Filled)
+        self.drawing = True
 
     def end(self):
-        pass
+        assert self.drawing
+        self.flush()
+        self.last_texture = None
+        self.drawing = False
 
-    def draw(self, texture):
-        self.shader.bind()
-        self.vao.bind()
-        self.ibo.bind()
-        glDrawElements(GL_TRIANGLES, self.ibo.count, GL_UNSIGNED_INT, None)
+    def switch_texture(self, texture: Texture):
+        self.flush()
+        self.last_texture = texture
+
+    def flush(self):
+        if self.renderer.contains_vertices():
+            self.last_texture.bind()
+            self.renderer.end()
+
+    def check(self, texture: Texture, new_vertices: int):
+        if texture is not self.last_texture:
+            self.switch_texture(texture)
+        elif new_vertices > self.renderer.free_vertices_count():
+            self.flush()
+
+    def draw_texture(self, texture: Texture, x: float, y: float, width: float, height: float):
+        self.check(texture, 54)
+
+        # triangle 1
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x, y, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(0.0, 0.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x + width, y, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(1.0, 0.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x + width, y + height, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(1.0, 1.0)
+
+        # triangle 2
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x + width, y + height, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(1.0, 1.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x, y + height, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(0.0, 1.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x, y, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(0.0, 0.0)
+
+    def dispose(self):
+        self.renderer.dispose()

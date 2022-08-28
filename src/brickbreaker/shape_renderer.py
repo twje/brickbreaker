@@ -31,7 +31,7 @@ class ShapeRenderer:
         if self.shape_type != preferred and self.shape_type != other:
             self.end()
             self.begin(preferred)
-        elif self.renderer.free_vertices_count() < new_vertices:
+        elif new_vertices > self.renderer.free_vertices_count():
             shape_type = self.shape_type
             self.end()
             self.begin(shape_type)
