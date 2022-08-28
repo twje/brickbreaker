@@ -31,13 +31,13 @@ class ShapeRenderer:
         if self.shape_type != preferred and self.shape_type != other:
             self.end()
             self.begin(preferred)
-        elif new_vertices > self.renderer.free_vertices_count():
+        elif self.renderer.free_vertices_count() > new_vertices:
             shape_type = self.shape_type
             self.end()
             self.begin(shape_type)
 
     def rect(self, x: float, y: float, width: float, height: float):
-        self.check(ShapeType.Line, ShapeType.Filled, 7)
+        self.check(ShapeType.Line, ShapeType.Filled, 8)
         if self.shape_type == ShapeType.Line:
             # line 1
             with self.renderer.start_new_vertex():

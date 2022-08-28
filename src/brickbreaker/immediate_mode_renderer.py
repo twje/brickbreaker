@@ -72,6 +72,7 @@ class ImmediateModeRenderer:
             max_vertices * self.vbo_layout.count,
             dtype=np.float32
         )
+
         self.vbo = VertexBuffer(self.vertices)
 
         # vao
@@ -134,6 +135,7 @@ class ImmediateModeRenderer:
     def begin(self, proj_model_view, primitive_type):
         self.proj_model_view = proj_model_view
         self.primitive_type = primitive_type
+        self.shader.bind()
 
     def end(self):
         self.flush()
