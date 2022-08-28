@@ -9,6 +9,7 @@ class VertexBuffer:
         glBufferData(GL_ARRAY_BUFFER, data.nbytes, data, GL_STATIC_DRAW)
 
     def set_data(self, data, size: int):
+        self.bind()
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data)
 
     def bind(self) -> None:
