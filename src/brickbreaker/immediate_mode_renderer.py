@@ -2,13 +2,14 @@ from .vertex_buffer_layout import VertexBufferLayout
 from .vertex_array import VertexArray
 from .vertex_buffer import VertexBuffer
 from .shader import Shader
+from .color import Color
 import numpy as np
 from OpenGL.GL import *
 
 
 class VertexCounter:
-    def __init__(self, vertex_element_count) -> None:
-        self.vertex_element_count = vertex_element_count
+    def __init__(self, element_count) -> None:
+        self.element_count = element_count
         self.vertex_id = 0
         self.num_vertices = 0
 
@@ -16,7 +17,7 @@ class VertexCounter:
         pass
 
     def __exit__(self, exc_type, exc, exc_tb):
-        self.vertex_id += self.vertex_element_count
+        self.vertex_id += self.element_count
         self.num_vertices += 1
 
     def offset(self, value):
@@ -151,13 +152,13 @@ class ImmediateModeRenderer:
     def start_new_vertex(self):
         return self.vertex_counter
 
-    def color(self, r: float, g: float, b: float, a: float):
+    def color(self, color: Color):
         assert self.has_colors
         offset = self.vertex_counter.offset(self.color_offset)
-        self.vertices[offset] = r
-        self.vertices[offset + 1] = g
-        self.vertices[offset + 2] = b
-        self.vertices[offset + 3] = a
+        self.vertices[offset] = color.r
+        self.vertices[offset + 1] = color.g
+        self.vertices[offset + 2] = color.b
+        self.vertices[offset + 3] = color.a
 
     def texture(self, u: float, v: float):
         assert self.has_texture

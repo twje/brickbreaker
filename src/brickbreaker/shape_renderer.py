@@ -1,7 +1,6 @@
 from .immediate_mode_renderer import ImmediateModeRenderer
 from .shape_type import ShapeType
-from .gdx import Gdx
-import pyrr
+from .color import Color
 
 
 class ShapeRenderer:
@@ -10,7 +9,8 @@ class ShapeRenderer:
     def __init__(self) -> None:
         self.shape_type = None
         self.projection = None
-        self.renderer = ImmediateModeRenderer(5000, False, True, 0)
+        self.color = Color()
+        self.renderer = ImmediateModeRenderer(5000, True, False)
 
     def set_projection_matrix(self, matrix):
         self.projection = matrix
@@ -37,52 +37,80 @@ class ShapeRenderer:
             self.begin(shape_type)
 
     def rect(self, x: float, y: float, width: float, height: float):
-        self.check(ShapeType.Line, ShapeType.Filled, 8)
+        self.check(ShapeType.Line, ShapeType.Filled, 7)
         if self.shape_type == ShapeType.Line:
             # line 1
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x, y, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y, 0)
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y, 0)
 
             # line 2
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y + height, 0)
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y + height, 0)
 
             # line 3
-            self.renderer.color(1.0, 0.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y + height, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x, y + height, 0)
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y + height, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y + height, 0)
 
             # line 4
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x, y + height, 0)
-            self.renderer.color(1.0, 1.0, 0.0, 1.0)
-            self.renderer.vertex(x, y, 0)
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y + height, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y, 0)
         else:
             # triangle 1
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x, y, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y + height, 0)
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y + height, 0)
 
             # triangle 2
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x + width, y + height, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x, y + height, 0)
-            self.renderer.color(1.0, 1.0, 1.0, 1.0)
-            self.renderer.vertex(x, y, 0)
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x + width, y + height, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y + height, 0)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.color(self.color)
+                self.renderer.vertex(x, y, 0)
 
     def line(self, x1: float, y1: float, x2: float, y2: float):
         self.check(ShapeType.Line, None, 2)
-        self.renderer.vertex(x1, y1, 0)
-        self.renderer.vertex(x2, y2, 0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.color(self.color)
+            self.renderer.vertex(x1, y1, 0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.color(self.color)
+            self.renderer.vertex(x2, y2, 0)
 
     def dispose(self):
         self.renderer.dispose()
