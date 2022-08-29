@@ -1,3 +1,4 @@
+from .entity_factory import EntityFactory
 from .screen import Screen
 from .game_world import GameWorld
 from .game_renderer import GameRenderer
@@ -10,7 +11,7 @@ class GameScreen(Screen):
         self.game = game
 
     def show(self):
-        self.game_world = GameWorld()
+        self.game_world = GameWorld(EntityFactory())
         self.renderer = GameRenderer(self.game_world)
         self.controller = GameController(self.game_world, self.renderer)
 

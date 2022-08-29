@@ -3,9 +3,10 @@ from .orthographic_camera import OrthographicCamera
 from .fit_viewport import FitViewport
 from .sprite_batch import SpriteBatch
 from .debug_camera_controller import DebugCameraController
+from .texture import Texture
+from . import color
 from . import viewport_utils
 from . import game_config
-from .texture import Texture
 
 
 class GameRenderer:
@@ -19,7 +20,6 @@ class GameRenderer:
         )
         self.renderer = ShapeRenderer()
         self.batch = SpriteBatch()
-
         self.debug_camera_controller = DebugCameraController()
         self.debug_camera_controller.set_start_position(
             game_config.WORLD_CENTER_X,
@@ -43,11 +43,46 @@ class GameRenderer:
         self.batch.draw_texture(self.texture, 2, 2, 1, 1)
         self.batch.end()
 
-        # debug
+        self.render_debug()
+
+    def render_debug(self):
         self.renderer.set_projection_matrix(self.camera.combined)
         self.renderer.begin(ShapeRenderer.ShapeType.Line)
-        self.renderer.rect(0.5, 0.5, 1, 1)
+        self.draw_debug()
         self.renderer.end()
+
+    def draw_debug(self):
+        old_color = self.renderer.color.copy()
+        self.renderer.color = color.RED
+
+        # background
+        background = self.game_world.background
+        self.renderer.rect(
+            background.first_region_bounds.x,
+            background.first_region_bounds.y,
+            background.first_region_bounds.width,
+            background.first_region_bounds.height
+        )
+        self.renderer.rect(
+            background.second_region_bounds.x,
+            background.second_region_bounds.y,
+            background.second_region_bounds.width,
+            background.second_region_bounds.height
+        )
+
+        # paddle
+        paddle = self.game_world.paddle
+        self.renderer.rect(paddle.x, paddle.y, paddle.width, paddle.height)
+
+        # bricks
+        for brick in self.game_world.bricks:
+            self.renderer.rect(brick.x, brick.y, brick.width, brick.height)
+
+        # ball
+        ball = self.game_world.ball
+        self.renderer.polygon(ball.bounds.get_transformed_vertices())
+
+        self.renderer.color = old_color
 
     def dispose(self):
         self.renderer.dispose()

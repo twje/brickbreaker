@@ -16,3 +16,9 @@ class Color:
 
     def copy(self):
         return Color(self.r, self.g, self.b, self.a)
+
+
+WHITE = Color(1.0, 1.0, 1.0, 1.0)
+RED = Color(1.0, 0.0, 0.0, 1.0)
+GREEN = Color(0.0, 1.0, 0.0, 1.0)
+BLUE = Color(0.0, 0.0, 1.0, 1.0)

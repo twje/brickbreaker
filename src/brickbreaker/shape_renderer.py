@@ -112,5 +112,35 @@ class ShapeRenderer:
             self.renderer.color(self.color)
             self.renderer.vertex(x2, y2, 0)
 
+    def polygon(self, vertices):
+        # Polygons must contain at least 3 points.
+        assert len(vertices) >= 6
+        # Polygons must have an even number of vertices.
+        assert len(vertices) % 2 == 0
+
+        self.check(ShapeType.Line, None, len(vertices))
+
+        first_x = vertices[0]
+        first_y = vertices[1]
+        for index in range(0, len(vertices), 2):
+
+            x1 = vertices[index]
+            y1 = vertices[index + 1]
+
+            if index + 2 >= len(vertices):
+                x2 = first_x
+                y2 = first_y
+            else:
+                x2 = vertices[index + 2]
+                y2 = vertices[index + 3]
+
+            with self.renderer.start_new_vertex():
+                self.renderer.vertex(x1, y1, 0)
+                self.renderer.color(self.color)
+
+            with self.renderer.start_new_vertex():
+                self.renderer.vertex(x2, y2, 0)
+                self.renderer.color(self.color)
+
     def dispose(self):
         self.renderer.dispose()

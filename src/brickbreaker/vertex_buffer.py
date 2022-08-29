@@ -8,7 +8,8 @@ class VertexBuffer:
         glBindBuffer(GL_ARRAY_BUFFER, self.renderer_id)
         glBufferData(GL_ARRAY_BUFFER, data.nbytes, data, GL_STATIC_DRAW)
 
-    def set_data(self, data, size: int):
+    def set_data(self, data, size: int):           
+        # Explicitly bind becuase VAO stores a VBO indirectly via attrib layouts
         self.bind()
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data)
 

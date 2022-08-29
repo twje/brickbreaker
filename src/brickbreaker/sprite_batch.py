@@ -42,7 +42,7 @@ class SpriteBatch:
             self.flush()
 
     def draw_texture(self, texture: Texture, x: float, y: float, width: float, height: float):
-        self.check(texture, 54)
+        self.check(texture, 6)
 
         # triangle 1
         with self.renderer.start_new_vertex():

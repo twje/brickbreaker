@@ -31,7 +31,6 @@ class Window:
         self.register_window_callbacks()
         glClearColor(0, 0.1, 0.1, 1)
 
-        glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -80,7 +79,7 @@ class Window:
         glfw.poll_events()        
 
     def begin_render(self):
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT) 
+        glClear(GL_COLOR_BUFFER_BIT) 
 
     def end_render(self):
         glfw.swap_buffers(self.window)
