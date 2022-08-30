@@ -2,6 +2,7 @@ from .immediate_mode_renderer import ImmediateModeRenderer
 from .shape_type import ShapeType
 from .color import Color
 from .texture import Texture
+from .texture_region import TextureRegion
 
 
 class SpriteBatch:
@@ -43,6 +44,41 @@ class SpriteBatch:
 
     def draw_texture(self, texture: Texture, x: float, y: float, width: float, height: float):
         self.check(texture, 6)
+
+        # triangle 1
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x, y, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(0.0, 0.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x + width, y, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(1.0, 0.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x + width, y + height, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(1.0, 1.0)
+
+        # triangle 2
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x + width, y + height, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(1.0, 1.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x, y + height, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(0.0, 1.0)
+
+        with self.renderer.start_new_vertex():
+            self.renderer.vertex(x, y, 0)
+            self.renderer.color(self.color)
+            self.renderer.texture(0.0, 0.0)
+
+    def draw_texture_region(self, texture_region: TextureRegion, x: float, y: float, width: float, height: float):
+        self.check(texture_region.texture, 6)
 
         # triangle 1
         with self.renderer.start_new_vertex():

@@ -1,37 +1,41 @@
 from .screen import Screen
 from OpenGL.GL.shaders import compileProgram, compileShader
+from .shader import Shader
 from OpenGL.GL import *
 from PIL import Image
 import numpy as np
 
+
 vertex_src = """
-# version 330
+#version 330 core
+in vec4 a_position;
+in vec4 a_color;
+in vec2 a_texture;
 
-layout(location = 0) in vec4 a_position;
-layout(location = 1) in vec2 a_texture;
-
+out vec4 v_color;
 out vec2 v_texture;
 
 void main()
 {
-    gl_Position = a_position;
-    v_texture = a_texture;
+	gl_Position = a_position;
+	v_color = a_color;
+	v_texture = a_texture;
 }
 """
 
 fragment_src = """
-# version 330
-
-in vec2 v_texture;
-
+#version 330 core
 out vec4 out_color;
+
+in vec4 v_color;
+in vec2 v_texture;
 
 uniform sampler2D s_texture;
 
 void main()
-{    
-    out_color = texture(s_texture, v_texture);    
-}
+{	
+    out_color = v_color * texture(s_texture, v_texture);
+};
 """
 
 
@@ -70,10 +74,10 @@ class Test(Screen):
 
     def show(self):
         vertices = np.array([
-            -0.5, -0.5, 0, 0.0, 0.0,
-            0.5, -0.5, 0, 1.0, 0.0,
-            0.5,  0.5, 0, 1.0, 1.0,
-            -0.5,  0.5, 0, 0.0, 1.0
+            -0.5, -0.5, 0, 1.0, 1.0, 1.0, 1.0, 0, 0,
+            0.5, -0.5, 0, 1.0, 1.0, 1.0, 1.0, 1, 0,
+            0.5,  0.5, 0, 1.0, 1.0, 1.0, 1.0, 1, 1,
+            -0.5,  0.5, 0, 1.0, 1.0, 1.0, 1.0, 0, 1
         ], dtype=np.float32)
 
         self.indices = np.array([0, 1, 2, 2, 3, 0], dtype=np.uint32)
@@ -102,52 +106,71 @@ class Test(Screen):
             GL_STATIC_DRAW
         )
 
+        # shader
+        self.shader = Shader(vertex_src, fragment_src, [
+                             "a_color", "a_texture", "a_position"])
+
+        # self.shader_program = compileProgram(
+        #     compileShader(
+        #         vertex_src,
+        #         GL_VERTEX_SHADER
+        #     ),
+        #     compileShader(
+        #         fragment_src,
+        #         GL_FRAGMENT_SHADER
+        #     ),
+        # )
+        # glUseProgram(self.shader_program)
+
+        # texture
+        self.texture = glGenTextures(1)
+
+        # glActiveTexture(GL_TEXTURE0)
+        load_texture("textures/smiley.png", self.texture)
+
+        loc1 = glGetAttribLocation(self.shader.renderer_id, "a_position")
+        loc2 = glGetAttribLocation(self.shader.renderer_id, "a_color")
+        loc3 = glGetAttribLocation(self.shader.renderer_id, "a_texture")
+
+        print(loc1, loc2, loc3)
+
+        # loc1 = glGetAttribLocation(self.shader_program, "a_position")
+        # loc2 = glGetAttribLocation(self.shader_program, "a_color")
+        # loc3 = glGetAttribLocation(self.shader_program, "a_texture")
+        # print(loc1)
+        # print(loc2)
+        # print(loc3)
+
+        # glActiveTexture(GL_TEXTURE1)
         # quad attribs
-        glEnableVertexAttribArray(0)
+        glEnableVertexAttribArray(loc1)
         glVertexAttribPointer(
-            0,
+            loc1,
             3,
             GL_FLOAT,
             GL_FALSE,
-            vertices.itemsize * 5,
+            vertices.itemsize * 9,
             ctypes.c_void_p(0)
         )
 
-        glEnableVertexAttribArray(1)
+        glEnableVertexAttribArray(loc2)
         glVertexAttribPointer(
-            1,
+            loc2,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            vertices.itemsize * 9,
+            ctypes.c_void_p(12)
+        )
+        glEnableVertexAttribArray(loc3)
+        glVertexAttribPointer(
+            loc3,
             2,
             GL_FLOAT,
             GL_FALSE,
-            vertices.itemsize * 5,
-            ctypes.c_void_p(12)
+            vertices.itemsize * 9,
+            ctypes.c_void_p(28)
         )
-
-        # shader
-        self.shader_program = compileProgram(
-            compileShader(
-                vertex_src,
-                GL_VERTEX_SHADER
-            ),
-            compileShader(
-                fragment_src,
-                GL_FRAGMENT_SHADER
-            ),
-        )
-        glUseProgram(self.shader_program)
-
-        tex_loc = glGetUniformLocation(self.shader_program, "s_texture")
-
-        # texture
-        self.textures = glGenTextures(2)
-
-        glActiveTexture(GL_TEXTURE0)
-        tex1 = load_texture("textures/smiley.png", self.textures[0])
-
-        glActiveTexture(GL_TEXTURE1)
-        tex2 = load_texture("textures/cat.png", self.textures[1])
-
-        glUniform1i(tex_loc, 0)
 
         # toggle context state
         glEnable(GL_DEPTH_TEST)
@@ -156,7 +179,6 @@ class Test(Screen):
 
     def render(self, delta):
         glBindVertexArray(self.vao)
-        #glBindTexture(GL_TEXTURE_2D, self.textures[0])
         glDrawElements(
             GL_TRIANGLES,
             len(self.indices),
