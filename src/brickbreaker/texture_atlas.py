@@ -120,6 +120,7 @@ class TextureAtlas:
         texture_regions = []
         data = TextureAtlasData(filepath)
         texture = Texture(data.page.texture_file)
+
         for region in data.regions:
             texture_regions.append(TextureRegion(
                 texture,

@@ -10,10 +10,10 @@ class TextureRegion:
         self.width = width
         self.height = height
 
-    @property
-    def uv1(self):
-        pass
+    def uv(self):
+        u1 = self.x/self.texture.width
+        v1 = 1 - ((self.y + self.height)/self.texture.height)
+        u2 = (self.x + self.width)/self.texture.width
+        v2 = 1 - (self.y/self.texture.height)
 
-    @property
-    def uv2(self):
-        pass
+        return u1, v1, u2, v2

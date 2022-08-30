@@ -80,37 +80,39 @@ class SpriteBatch:
     def draw_texture_region(self, texture_region: TextureRegion, x: float, y: float, width: float, height: float):
         self.check(texture_region.texture, 6)
 
+        u1, v1, u2, v2 = texture_region.uv()
+
         # triangle 1
         with self.renderer.start_new_vertex():
             self.renderer.vertex(x, y, 0)
             self.renderer.color(self.color)
-            self.renderer.texture(0.0, 0.0)
+            self.renderer.texture(u1, v1)
 
         with self.renderer.start_new_vertex():
             self.renderer.vertex(x + width, y, 0)
             self.renderer.color(self.color)
-            self.renderer.texture(1.0, 0.0)
+            self.renderer.texture(u2, v1)
 
         with self.renderer.start_new_vertex():
             self.renderer.vertex(x + width, y + height, 0)
             self.renderer.color(self.color)
-            self.renderer.texture(1.0, 1.0)
+            self.renderer.texture(u2, v2)
 
         # triangle 2
         with self.renderer.start_new_vertex():
             self.renderer.vertex(x + width, y + height, 0)
             self.renderer.color(self.color)
-            self.renderer.texture(1.0, 1.0)
+            self.renderer.texture(u2, v2)
 
         with self.renderer.start_new_vertex():
             self.renderer.vertex(x, y + height, 0)
             self.renderer.color(self.color)
-            self.renderer.texture(0.0, 1.0)
+            self.renderer.texture(u1, v2)
 
         with self.renderer.start_new_vertex():
             self.renderer.vertex(x, y, 0)
             self.renderer.color(self.color)
-            self.renderer.texture(0.0, 0.0)
+            self.renderer.texture(u1, v1)
 
     def dispose(self):
         self.renderer.dispose()

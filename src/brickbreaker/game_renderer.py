@@ -29,6 +29,9 @@ class GameRenderer:
         # refactor out
         self.texture_atlas = TextureAtlas("textures/gameplay/gameplay.atlas")
         self.background_region = self.texture_atlas.find_region("background")
+        self.paddle_region = self.texture_atlas.find_region("paddle")
+        self.brick_region = self.texture_atlas.find_region("brick")
+        self.ball_region = self.texture_atlas.find_region("ball")
 
     def resize(self, width: int, height: int):
         self.viewport.update(width, height, True)
@@ -36,8 +39,6 @@ class GameRenderer:
     def render(self, delta: float):
         self.debug_camera_controller.handle_debug_input(delta)
         self.debug_camera_controller.apply_to(self.camera)
-
-        viewport_utils.draw_grid(self.viewport, self.renderer)
 
         self.render_game_play()
         self.render_debug()
@@ -49,9 +50,55 @@ class GameRenderer:
         self.batch.end()
 
     def draw_game_play(self):
-        self.batch.draw_texture_region(self.background_region, 0, 0, 5, 5)
+        # background
+        background = self.game_world.background
+        self.batch.draw_texture_region(
+            self.background_region,
+            background.first_region_bounds.x,
+            background.first_region_bounds.y,
+            background.first_region_bounds.width,
+            background.first_region_bounds.height
+        )
+        self.batch.draw_texture_region(
+            self.background_region,
+            background.second_region_bounds.x,
+            background.second_region_bounds.y,
+            background.second_region_bounds.width,
+            background.second_region_bounds.height
+        )
+
+        # paddle
+        paddle = self.game_world.paddle
+        self.batch.draw_texture_region(
+            self.paddle_region,
+            paddle.x,
+            paddle.y,
+            paddle.width,
+            paddle.height
+        )
+
+        # bricks
+        for brick in self.game_world.bricks:
+            self.batch.draw_texture_region(
+                self.brick_region,
+                brick.x,
+                brick.y,
+                brick.width,
+                brick.height
+            )
+
+        # ball
+        ball = self.game_world.ball
+        self.batch.draw_texture_region(
+            self.ball_region,
+            ball.x,
+            ball.y,
+            ball.width,
+            ball.height
+        )
 
     def render_debug(self):
+        viewport_utils.draw_grid(self.viewport, self.renderer)
         self.renderer.set_projection_matrix(self.camera.combined)
         self.renderer.begin(ShapeRenderer.ShapeType.Line)
         self.draw_debug()

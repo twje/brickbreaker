@@ -16,20 +16,28 @@ class Texture:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
         # load image data
-        image = Image.open(filepath)
-        image = image.transpose(Image.FLIP_TOP_BOTTOM)
-        img_data = image.convert("RGBA").tobytes()
+        self.image = Image.open(filepath)
+        self.image = self.image.transpose(Image.FLIP_TOP_BOTTOM)
+        img_data = self.image.convert("RGBA").tobytes()
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
             GL_RGBA,
-            image.width,
-            image.height,
+            self.image.width,
+            self.image.height,
             0,
             GL_RGBA,
             GL_UNSIGNED_BYTE,
             img_data
         )
+
+    @property
+    def width(self):
+        return self.image.width
+
+    @property
+    def height(self):
+        return self.image.height
 
     def bind(self):
         glBindTexture(GL_TEXTURE_2D, self.renderer_id)
