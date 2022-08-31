@@ -122,7 +122,7 @@ class GameRenderer:
 
         # paddle
         paddle = self.game_world.paddle
-        shape_render_utils.rect(self.renderer, paddle)
+        shape_render_utils.polygon(self.renderer, paddle.bounds)
 
         # bricks
         for brick in self.game_world.bricks:

@@ -1,7 +1,7 @@
 import math
 
 
-def create_octagon(pos_x: float, pos_y: float, origin_x: float, origin_y: float, radius: float, vertex_count: float):
+def create_octagon(origin_x: float, origin_y: float, radius: float, vertex_count: float):
     vertices = []
     for index in range(0, vertex_count):
         x = origin_x + radius * \
@@ -11,3 +11,12 @@ def create_octagon(pos_x: float, pos_y: float, origin_x: float, origin_y: float,
         vertices.extend([x, y])
 
     return vertices
+
+
+def create_rect(x: float, y: float, width: float, height: float):
+    return [
+        x, y,
+        x + width, y,
+        x + width, y + height,
+        x, y + height
+    ]

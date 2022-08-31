@@ -8,8 +8,6 @@ class Ball(EntityBase):
 
     def create_vertices(self):
         return shape_utils.create_octagon(
-            self.x,
-            self.y,
             self.width/2,
             self.height/2,
             self.width/2,

@@ -17,14 +17,13 @@ class GameScreen(ScreenBase):
         self.renderer = GameRenderer(self.game_world)
         self.controller = GameController(self.game_world, self.renderer)
         self.paddle_input_controller = PaddleInputController(
-            self.game_world.paddle,
-            self.controller
+            self.game_world.paddle
         )
 
     def render(self, delta):
         game_over = self.game_world.is_game_over()
 
-        if not game_over:
+        if not game_over:            
             self.paddle_input_controller.update(delta)
 
         self.controller.update(delta)

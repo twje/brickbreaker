@@ -13,6 +13,17 @@ class GameWorld:
         self.draw_debug = False
         self.start_level()
 
+    def start_level(self):
+        self.restart()
+        self.bricks = self.factory.create_bricks()
+
+    def restart(self):
+        pass
+
+    def update(self, delta: float):
+        self.paddle.update(delta)
+        self.ball.update(delta)
+
     def is_game_over(self):
         return False
 
@@ -21,10 +32,3 @@ class GameWorld:
 
     def toggle_debug(self):
         self.draw_debug = not self.draw_debug
-
-    def start_level(self):
-        self.restart()
-        self.bricks = self.factory.create_bricks()
-
-    def restart(self):
-        pass

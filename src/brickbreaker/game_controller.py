@@ -12,6 +12,8 @@ class GameController:
     def update(self, delta: float):
         self.handle_debug_input()
 
+        self.game_world.update(delta)
+
     def handle_debug_input(self):
         if Gdx.input.is_key_pressed(glfw.KEY_F5):
             self.game_world.toggle_draw_grid()

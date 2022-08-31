@@ -1,5 +1,5 @@
+from . import game_config
 from .core.gdx import Gdx
-from .game_controller import GameController
 import glfw
 
 
@@ -8,12 +8,14 @@ class PaddleInputController:
     Mobile touch gestures has been removed as it is only a Desktop only port
     """
 
-    def __init__(self, paddle, controller: GameController) -> None:
+    def __init__(self, paddle) -> None:
         self.paddle = paddle
-        self.controller = controller
 
     def update(self, delta: float):
+        velocity_x = 0
         if Gdx.input.is_key_held(glfw.KEY_LEFT):
-            pass
+            velocity_x = -game_config.PADDLE_VELOCITY_X
         elif Gdx.input.is_key_held(glfw.KEY_RIGHT):
-            pass
+            velocity_x = game_config.PADDLE_VELOCITY_X
+
+        self.paddle.velocity_x = velocity_x
