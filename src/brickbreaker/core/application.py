@@ -1,5 +1,6 @@
 from .application_listener import ApplicationListener
 from .window import Window
+from .input_manager import InputManager
 from .clock import Clock
 from .gdx import Gdx, Graphics
 
@@ -13,18 +14,21 @@ class Application:
         self.listener = listener
         self.window = Window(self, width, height, title)
         self.clock = Clock()
+        self.input = InputManager()
 
         # global
         Gdx.graphics = Graphics(self.window)
+        Gdx.input = self.input
 
     def run(self):
         self.create()
         while not self.window.is_done():
             self.window.update()
             self.render()
+            self.input.update()
         self.destroy()
 
-    def render(self):        
+    def render(self):
         self.window.begin_render()
         self.listener.render(self.clock.delta)
         self.window.end_render()
@@ -57,3 +61,9 @@ class Application:
 
     def window_resize(self, width, height):
         self.listener.resize(width, height)
+
+    def key_pressed_callback(self, key):
+        self.input.set_key_pressed(key)
+
+    def key_released_callback(self, key):
+        self.input.set_key_released(key)

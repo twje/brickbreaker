@@ -1,3 +1,6 @@
+from .input_manager import InputManager
+
+
 class Graphics:
     def __init__(self, window) -> None:
         self.window = window
@@ -12,4 +15,5 @@ class Graphics:
 
 
 class Gdx:
-    graphics = None
+    graphics: Graphics = None
+    input: InputManager = None

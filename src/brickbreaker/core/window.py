@@ -68,6 +68,10 @@ class Window:
             self.window,
             self.window_size_callback
         )
+        glfw.set_key_callback(
+            self.window,
+            self.key_callback_callback
+        )
 
     def is_done(self):
         return self.quit or glfw.window_should_close(self.window)
@@ -76,10 +80,10 @@ class Window:
         glfw.terminate()
 
     def update(self):
-        glfw.poll_events()        
+        glfw.poll_events()
 
     def begin_render(self):
-        glClear(GL_COLOR_BUFFER_BIT) 
+        glClear(GL_COLOR_BUFFER_BIT)
 
     def end_render(self):
         glfw.swap_buffers(self.window)
@@ -101,3 +105,9 @@ class Window:
 
     def window_size_callback(self, window, width, height):
         self.application.window_resize(self.width, self.height)
+
+    def key_callback_callback(self, window, key, scancode, action, mods):
+        if action == glfw.PRESS:
+            self.application.key_pressed_callback(key)
+        elif action == glfw.RELEASE:
+            self.application.key_released_callback(key)

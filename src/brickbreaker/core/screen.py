@@ -1,7 +1,4 @@
 class Screen:
-    def getInputProcessor(self):
-        return None
-
     def show(self):
         """Called when this screen becomes the current screen for a Game."""
 

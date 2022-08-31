@@ -35,6 +35,7 @@ class GameRenderer:
 
     def resize(self, width: int, height: int):
         self.viewport.update(width, height, True)
+        viewport_utils.debug_pixels_per_unit(self.viewport)
 
     def render(self, delta: float):
         self.debug_camera_controller.handle_debug_input(delta)
@@ -100,13 +101,14 @@ class GameRenderer:
     def render_debug(self):
         self.viewport.apply(False)
 
-        print(self.game_world.draw_grid)
+        if self.game_world.draw_grid:
+            viewport_utils.draw_grid(self.viewport, self.renderer)
 
-        viewport_utils.draw_grid(self.viewport, self.renderer)
-        self.renderer.set_projection_matrix(self.camera.combined)
-        self.renderer.begin(ShapeRenderer.ShapeType.Line)
-        self.draw_debug()
-        self.renderer.end()
+        if self.game_world.draw_debug:
+            self.renderer.set_projection_matrix(self.camera.combined)
+            self.renderer.begin(ShapeRenderer.ShapeType.Line)
+            self.draw_debug()
+            self.renderer.end()
 
     def draw_debug(self):
         old_color = self.renderer.color.copy()

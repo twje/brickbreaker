@@ -1,11 +1,11 @@
 from .entity_factory import EntityFactory
-from .core.screen import Screen
+from .utils.screen_base import ScreenBase
 from .game_world import GameWorld
 from .game_renderer import GameRenderer
 from .game_controller import GameController
 
 
-class GameScreen(Screen):
+class GameScreen(ScreenBase):
     def __init__(self, game) -> None:
         super().__init__()
         self.game = game

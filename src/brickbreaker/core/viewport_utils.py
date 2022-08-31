@@ -3,6 +3,10 @@ from .shape_renderer import ShapeRenderer
 from . import color
 
 
+def debug_pixels_per_unit(viewport: FitViewport):
+    pass
+
+
 def draw_grid(viewport: FitViewport, renderer: ShapeRenderer):
     old_color = renderer.color.copy()
 
