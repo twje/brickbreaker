@@ -1,3 +1,4 @@
+from turtle import back
 from .utils.parrallax_layer import ParallaxLayer
 from .brick import Brick
 from .paddle import Paddle
@@ -35,4 +36,11 @@ class EntityFactory:
         return ParallaxLayer(0, 0, game_config.WORLD_WIDTH, game_config.WORLD_HEIGHT)
 
     def create_ball(self):
+        ball = Ball(
+            game_config.BALL_START_X,
+            game_config.BALL_START_Y,
+            game_config.BALL_SIZE,
+            game_config.BALL_SIZE
+        )
+        ball.post_init()
         return Ball(game_config.BALL_START_X, game_config.BALL_START_Y, game_config.BALL_SIZE, game_config.BALL_SIZE)

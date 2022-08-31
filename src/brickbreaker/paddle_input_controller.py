@@ -4,6 +4,10 @@ import glfw
 
 
 class PaddleInputController:
+    """
+    Mobile touch gestures has been removed as it is only a Desktop only port
+    """
+
     def __init__(self, paddle, controller: GameController) -> None:
         self.paddle = paddle
         self.controller = controller
