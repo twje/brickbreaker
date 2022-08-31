@@ -6,6 +6,7 @@ from .core.texture_atlas import TextureAtlas
 from .core import color
 from .core import viewport_utils
 from .utils.debug_camera_controller import DebugCameraController
+from .utils import shape_render_utils
 from . import game_config
 
 
@@ -116,30 +117,20 @@ class GameRenderer:
 
         # background
         background = self.game_world.background
-        self.renderer.rect(
-            background.first_region_bounds.x,
-            background.first_region_bounds.y,
-            background.first_region_bounds.width,
-            background.first_region_bounds.height
-        )
-        self.renderer.rect(
-            background.second_region_bounds.x,
-            background.second_region_bounds.y,
-            background.second_region_bounds.width,
-            background.second_region_bounds.height
-        )
+        shape_render_utils.rect(self.renderer, background.first_region_bounds)
+        shape_render_utils.rect(self.renderer, background.second_region_bounds)
 
         # paddle
         paddle = self.game_world.paddle
-        self.renderer.rect(paddle.x, paddle.y, paddle.width, paddle.height)
+        shape_render_utils.rect(self.renderer, paddle)
 
         # bricks
         for brick in self.game_world.bricks:
-            self.renderer.rect(brick.x, brick.y, brick.width, brick.height)
+            shape_render_utils.rect(self.renderer, brick)
 
         # ball
         ball = self.game_world.ball
-        self.renderer.polygon(ball.bounds.get_transformed_vertices())
+        shape_render_utils.polygon(self.render, ball.bounds)
 
         self.renderer.color = old_color
 
