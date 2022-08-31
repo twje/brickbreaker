@@ -1,11 +1,11 @@
-from .shape_renderer import ShapeRenderer
-from .orthographic_camera import OrthographicCamera
-from .fit_viewport import FitViewport
-from .sprite_batch import SpriteBatch
-from .debug_camera_controller import DebugCameraController
-from .texture_atlas import TextureAtlas
-from . import color
-from . import viewport_utils
+from .core.shape_renderer import ShapeRenderer
+from .core.orthographic_camera import OrthographicCamera
+from .core.fit_viewport import FitViewport
+from .core.sprite_batch import SpriteBatch
+from .core.texture_atlas import TextureAtlas
+from .core import color
+from .core import viewport_utils
+from .utils.debug_camera_controller import DebugCameraController
 from . import game_config
 
 
@@ -99,7 +99,7 @@ class GameRenderer:
 
     def render_debug(self):
         self.viewport.apply(False)
-        
+
         print(self.game_world.draw_grid)
 
         viewport_utils.draw_grid(self.viewport, self.renderer)

@@ -1,5 +1,5 @@
-from .game_base import GameBase
-from .application import Application
+from .utils.game_base import GameBase
+from .core.application import Application
 from .game_screen import GameScreen
 from . import game_config
 

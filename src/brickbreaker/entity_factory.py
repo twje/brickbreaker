@@ -1,4 +1,4 @@
-from .parrallax_layer import ParallaxLayer
+from .utils.parrallax_layer import ParallaxLayer
 from .brick import Brick
 from .paddle import Paddle
 from .ball import Ball

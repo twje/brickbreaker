@@ -1,4 +1,4 @@
-from brickbreaker.shader import Shader
+from .shader import Shader
 from .vertex_buffer import VertexBuffer
 from .vertex_buffer_layout import VertexBufferLayout
 from .vertex_buffer_layout import VertexBufferElement

@@ -1,4 +1,4 @@
-from .application_listener import ApplicationListener
+from brickbreaker.core.application_listener import ApplicationListener
 
 
 class GameBase(ApplicationListener):

@@ -1,5 +1,5 @@
 import math
-from .polygon import Polygon
+from .core.polygon import Polygon
 
 
 class Ball:

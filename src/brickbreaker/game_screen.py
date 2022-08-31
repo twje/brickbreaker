@@ -1,5 +1,5 @@
 from .entity_factory import EntityFactory
-from .screen import Screen
+from .core.screen import Screen
 from .game_world import GameWorld
 from .game_renderer import GameRenderer
 from .game_controller import GameController

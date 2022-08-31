@@ -1,7 +1,4 @@
-from telnetlib import SE
-
-
-from .rectangle import Rectangle
+from brickbreaker.core.rectangle import Rectangle
 
 
 class ParallaxLayer:
