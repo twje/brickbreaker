@@ -30,7 +30,14 @@ class EntityFactory:
         return Brick(x, y, game_config.BRICK_WIDTH, game_config.BRICK_HEIGHT)
 
     def create_paddle(self):
-        return Paddle(game_config.PADDLE_START_X, game_config.PADDLE_START_Y, game_config.PADDLE_START_WIDTH, game_config.PADDLE_HEIGHT)
+        paddle = Paddle(
+            game_config.PADDLE_START_X,
+            game_config.PADDLE_START_Y,
+            game_config.PADDLE_START_WIDTH,
+            game_config.PADDLE_HEIGHT
+        )
+        paddle.post_init()
+        return paddle
 
     def create_background(self):
         return ParallaxLayer(0, 0, game_config.WORLD_WIDTH, game_config.WORLD_HEIGHT)
