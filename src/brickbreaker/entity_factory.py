@@ -1,4 +1,3 @@
-from turtle import back
 from .utils.parrallax_layer import ParallaxLayer
 from .brick import Brick
 from .paddle import Paddle

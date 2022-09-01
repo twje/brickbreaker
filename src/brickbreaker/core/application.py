@@ -27,11 +27,11 @@ class Application:
         while not self.window.is_done():
             self.delta += self.clock.delta
             if self.delta >= self.fps:
-                self.render()
                 self.delta = 0
+                self.window.update()
+                self.render()
+                self.input.update()
 
-            self.window.update()
-            self.input.update()
         self.destroy()
 
     def render(self):

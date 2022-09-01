@@ -10,3 +10,6 @@ class ParallaxLayer:
             width,
             height
         )
+
+    def update(self, delta: float):
+        pass

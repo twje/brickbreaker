@@ -12,5 +12,5 @@ def rect(renderer: ShapeRenderer, rect: Rectangle):
     )
 
 
-def polygon(renderer: ShapeRenderer, polygon: Polygon):
+def polygon(renderer: ShapeRenderer, polygon: Polygon):    
     renderer.polygon(polygon.get_transformed_vertices())

@@ -46,6 +46,9 @@ class GameRenderer:
         self.render_debug()
 
     def render_game_play(self):
+        if not self.game_world.draw_world:
+            return
+
         self.batch.set_projection_matrix(self.camera.combined)
         self.batch.begin()
         self.draw_game_play()
@@ -130,7 +133,7 @@ class GameRenderer:
 
         # ball
         ball = self.game_world.ball
-        shape_render_utils.polygon(self.render, ball.bounds)
+        shape_render_utils.polygon(self.renderer, ball.bounds)
 
         self.renderer.color = old_color
 

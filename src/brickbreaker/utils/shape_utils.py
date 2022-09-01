@@ -13,10 +13,10 @@ def create_octagon(origin_x: float, origin_y: float, radius: float, vertex_count
     return vertices
 
 
-def create_rect(x: float, y: float, width: float, height: float):
+def create_rect(width: float, height: float):
     return [
-        x, y,
-        x + width, y,
-        x + width, y + height,
-        x, y + height
+        0, 0,
+        0 + width, 0,
+        0 + width, 0 + height,
+        0, 0 + height
     ]
