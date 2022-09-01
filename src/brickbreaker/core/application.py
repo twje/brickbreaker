@@ -15,6 +15,8 @@ class Application:
         self.window = Window(self, width, height, title)
         self.clock = Clock()
         self.input = InputManager()
+        self.fps = 1/60
+        self.delta = 0
 
         # global
         Gdx.graphics = Graphics(self.window)
@@ -23,14 +25,18 @@ class Application:
     def run(self):
         self.create()
         while not self.window.is_done():
+            self.delta += self.clock.delta
+            if self.delta >= self.fps:
+                self.render()
+                self.delta = 0
+
             self.window.update()
-            self.render()
             self.input.update()
         self.destroy()
 
     def render(self):
         self.window.begin_render()
-        self.listener.render(self.clock.delta)
+        self.listener.render(self.fps)
         self.window.end_render()
 
     def create(self):
