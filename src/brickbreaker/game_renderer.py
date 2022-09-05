@@ -1,3 +1,4 @@
+from brickbreaker.core.texture_region import TextureRegion
 from .core.shape_renderer import ShapeRenderer
 from .core.orthographic_camera import OrthographicCamera
 from .core.fit_viewport import FitViewport
@@ -7,6 +8,7 @@ from .core import color
 from .core import viewport_utils
 from .utils.debug_camera_controller import DebugCameraController
 from .utils import shape_render_utils
+from .utils.entity_base import EntityBase
 from . import game_config
 
 
@@ -74,33 +76,15 @@ class GameRenderer:
 
         # paddle
         paddle = self.game_world.paddle
-        self.batch.draw_texture_region(
-            self.paddle_region,
-            paddle.x,
-            paddle.y,
-            paddle.width,
-            paddle.height
-        )
+        self.draw_entity(self.paddle_region, paddle)
 
         # bricks
         for brick in self.game_world.bricks:
-            self.batch.draw_texture_region(
-                self.brick_region,
-                brick.x,
-                brick.y,
-                brick.width,
-                brick.height
-            )
+            self.draw_entity(self.brick_region, brick)
 
         # ball
         ball = self.game_world.ball
-        self.batch.draw_texture_region(
-            self.ball_region,
-            ball.x,
-            ball.y,
-            ball.width,
-            ball.height
-        )
+        self.draw_entity(self.ball_region, ball)
 
     def render_debug(self):
         self.viewport.apply(False)
@@ -136,6 +120,15 @@ class GameRenderer:
         shape_render_utils.polygon(self.renderer, ball.bounds)
 
         self.renderer.color = old_color
+
+    def draw_entity(self, region: TextureRegion, entity: EntityBase):
+        self.batch.draw_texture_region(
+            region,
+            entity.x,
+            entity.y,
+            entity.width,
+            entity.height
+        )
 
     def dispose(self):
         self.renderer.dispose()
