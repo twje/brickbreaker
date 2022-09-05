@@ -129,7 +129,7 @@ class GameRenderer:
 
         # bricks
         for brick in self.game_world.bricks:
-            shape_render_utils.rect(self.renderer, brick)
+            shape_render_utils.polygon(self.renderer, brick.bounds)
 
         # ball
         ball = self.game_world.ball

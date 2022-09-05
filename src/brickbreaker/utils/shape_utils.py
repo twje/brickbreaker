@@ -16,7 +16,7 @@ def create_octagon(origin_x: float, origin_y: float, radius: float, vertex_count
 def create_rect(width: float, height: float):
     return [
         0, 0,
-        0 + width, 0,
-        0 + width, 0 + height,
-        0, 0 + height
+        width, 0,
+        width, height,
+        0,  height
     ]

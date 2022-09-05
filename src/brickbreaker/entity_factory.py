@@ -26,7 +26,9 @@ class EntityFactory:
         return bricks
 
     def create_brick(self, x: float, y: float):
-        return Brick(x, y, game_config.BRICK_WIDTH, game_config.BRICK_HEIGHT)
+        brick = Brick(x, y, game_config.BRICK_WIDTH, game_config.BRICK_HEIGHT)
+        brick.post_init()
+        return brick
 
     def create_paddle(self):
         paddle = Paddle(

@@ -2,8 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Rectangle:
+class Circle:
     x: float = 0
     y: float = 0
-    width: float = 0
-    height: float = 0
+    radius: float = 0

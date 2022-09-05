@@ -1,4 +1,4 @@
-from tkinter.messagebox import RETRY
+from .rectangle import Rectangle
 
 
 class Polygon:
@@ -7,6 +7,7 @@ class Polygon:
         self.world_vertices: list[float] = None
         self.x = 0
         self.y = 0
+        self.bounds = None
         self.dirty = True
 
     def set_position(self, x: float, y: float):
@@ -29,9 +30,34 @@ class Polygon:
 
         self.world_vertices = []
         for index in range(0, len(self.local_vertices), 2):
-            x = self.local_vertices[index] + self.x
-            y = self.local_vertices[index + 1] + self.y
+            x = self.x + self.local_vertices[index]
+            y = self.y + self.local_vertices[index + 1]
             self.world_vertices.append(x)
             self.world_vertices.append(y)
 
+        self.dirty = False
         return self.world_vertices
+
+    def get_bounding_rectangle(self) -> Rectangle:
+        vertices = self.get_transformed_vertices()
+
+        min_x = vertices[0]
+        min_y = vertices[1]
+        max_x = vertices[0]
+        max_y = vertices[1]
+
+        for i in range(2, len(vertices), 2):
+            min_x = min(vertices[i], min_x)
+            min_y = min(vertices[i + 1], min_y)
+            max_x = max(vertices[i], max_x)
+            max_y = max(vertices[i + 1], max_y)
+
+        if self.bounds is None:
+            self.bounds = Rectangle()
+
+        self.bounds.x = min_x
+        self.bounds.y = min_y
+        self.bounds.width = max_x - min_x
+        self.bounds.height = max_y - min_y
+
+        return self.bounds
