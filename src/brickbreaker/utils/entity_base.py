@@ -31,6 +31,10 @@ class EntityBase:
         self._y = value
         self.update_bounds()
 
+    @property
+    def speed(self):
+        return math.sqrt(math.pow(self.velocity_x, 2) + math.pow(self.velocity_y, 2))
+
     def post_init(self):
         self.update_bounds()
 

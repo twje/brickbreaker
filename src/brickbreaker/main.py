@@ -1,6 +1,7 @@
 from .utils.game_base import GameBase
 from .core.application import Application
 from .game_screen import GameScreen
+from .geom_testbed import GeomTestbed
 from . import game_config
 
 
@@ -14,7 +15,7 @@ class BrickBreaker(GameBase):
 
 def main():
     app = Application(
-        BrickBreaker(),
+        GeomTestbed(),
         game_config.WIDTH,
         game_config.HEIGHT,
         "BrickBreaker"

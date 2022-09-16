@@ -113,7 +113,7 @@ class ShapeRenderer:
             self.renderer.vertex(x2, y2, 0)
 
     def polygon(self, vertices):
-        # Polygons must contain at least 3 points.
+        # Polygons must contain at least 3 points.        
         assert len(vertices) >= 6
         # Polygons must have an even number of vertices.
         assert len(vertices) % 2 == 0
