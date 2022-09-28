@@ -15,7 +15,7 @@ class BrickBreaker(GameBase):
 
 def main():
     app = Application(
-        GeomTestbed(),
+        BrickBreaker(),
         game_config.WIDTH,
         game_config.HEIGHT,
         "BrickBreaker"

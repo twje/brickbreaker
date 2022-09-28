@@ -1,3 +1,4 @@
+from brickbreaker.core.polygon import Polygon
 from brickbreaker.core.shape_renderer import ShapeRenderer
 from brickbreaker.core.primitive import Line
 from brickbreaker.core.primitive import Rectangle
@@ -46,10 +47,8 @@ def oriented_rectangle(renderer: ShapeRenderer, o_rect: OrientedRectangle):
     tr = shape_utils.oriented_rectangle_corner(o_rect, shape_utils.Corner.TR)
     br = shape_utils.oriented_rectangle_corner(o_rect, shape_utils.Corner.BR)
     bl = shape_utils.oriented_rectangle_corner(o_rect, shape_utils.Corner.BL)
-
-    renderer.line(0, 0, tl.x, tl.y)
-    renderer.line(0, 0, tr.x, tr.y)
-    renderer.line(0, 0, br.x, br.y)
-    renderer.line(0, 0, bl.x, bl.y)
-
     renderer.polygon([tl.x, tl.y, tr.x, tr.y, br.x, br.y, bl.x, bl.y])
+
+
+def polygon(renderer: ShapeRenderer, polygon: Polygon):
+    renderer.polygon(polygon.get_transformed_vertices())

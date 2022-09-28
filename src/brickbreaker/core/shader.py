@@ -30,6 +30,12 @@ class Shader:
         glUniformMatrix4fv(self.get_uniform_location(name),
                            1, GL_FALSE, matrix)
 
+    def set_uniform_iv(self, name: str, values: list[int]):
+        glUniform1iv(self.get_uniform_location(name), len(values), values)
+
+    def set_uniform_i(self, name: str, value: int):
+        glUniform1i(self.get_uniform_location(name), value)
+
     def get_uniform_location(self, name: str) -> int:
         if name in self.uniform_location_cache:
             return self.uniform_location_cache[name]

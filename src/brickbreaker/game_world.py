@@ -1,3 +1,4 @@
+from brickbreaker import paddle
 from .core.intersector import Intersector
 from .core.circle import Circle
 from .entity_factory import EntityFactory
@@ -89,71 +90,83 @@ class GameWorld:
         self.check_ball_with_brick_collision()
 
     def check_ball_with_paddle_collision(self):
-        pass
+        ball_bounds = self.ball.bounds
+        paddle_bounds = self.paddle.bounds
+
+        if Intersector.overlap_convex_polygons(ball_bounds, paddle_bounds):
+            #self.ball.velocity_y *= -1
+            ball_center_x = self.ball.x - self.ball.width/2
+            percent = (ball_center_x - self.paddle.x) / self.paddle.width
+            # interpolate angle between 150 and 30
+            bounce_angle = 150 - percent * 120
+            self.ball.set_velocity_by_angled(bounce_angle, self.ball.speed)
+            self.ball.y = 2
 
     def check_ball_with_brick_collision(self):
         for brick in list(self.bricks):
-            brick_polygon = brick.bounds
-            if not Intersector.overlap_convex_polygons(self.ball.bounds, brick_polygon):
-                continue
+            pass
 
-            # stage brick bounds
-            brick_bounds = brick_polygon.get_bounding_rectangle()
-            bottom_left = rectangle_utils.get_bottom_left(brick_bounds)
-            bottom_right = rectangle_utils.get_bottom_right(brick_bounds)
-            top_left = rectangle_utils.get_top_left(brick_bounds)
-            top_right = rectangle_utils.get_top_right(brick_bounds)
+            # brick_polygon = brick.bounds
+            # if not Intersector.overlap_convex_polygons(self.ball.bounds, brick_polygon):
+            #     continue
 
-            # stage ball bounds
-            radius = self.ball.width/2
-            ball_bounds = Circle(
-                self.ball.x + radius,
-                self.ball.y + radius,
-                radius
-            )
+            # # stage brick bounds
+            # brick_bounds = brick_polygon.get_bounding_rectangle()
+            # bottom_left = rectangle_utils.get_bottom_left(brick_bounds)
+            # bottom_right = rectangle_utils.get_bottom_right(brick_bounds)
+            # top_left = rectangle_utils.get_top_left(brick_bounds)
+            # top_right = rectangle_utils.get_top_right(brick_bounds)
 
-            # hit detection
-            center = Vector3([ball_bounds.x, ball_bounds.y, 0])
-            radius_squared = ball_bounds.radius * ball_bounds.radius
+            # # stage ball bounds
+            # radius = self.ball.width/2
+            # ball_bounds = Circle(
+            #     self.ball.x + radius,
+            #     self.ball.y + radius,
+            #     radius
+            # )
 
-            bottom_hit = Intersector.intersect_segment_circle(
-                bottom_left,
-                bottom_right,
-                center,
-                radius_squared
-            )
-            top_hit = Intersector.intersect_segment_circle(
-                top_left,
-                top_right,
-                center,
-                radius_squared
-            )
-            left_hit = Intersector.intersect_segment_circle(
-                bottom_left,
-                top_left,
-                center,
-                radius_squared
-            )
-            right_hit = Intersector.intersect_segment_circle(
-                bottom_right,
-                top_right,
-                center,
-                radius_squared
-            )
+            # # hit detection
+            # center = Vector3([ball_bounds.x, ball_bounds.y, 0])
+            # radius_squared = ball_bounds.radius * ball_bounds.radius
 
-            # left - right
-            if self.ball.velocity_x > 0 and left_hit:
-                self.ball.velocity_x *= -1
-            elif self.ball.velocity_x < 0 and right_hit:
-                self.ball.velocity_x *= -1
+            # bottom_hit = Intersector.intersect_segment_circle(
+            #     bottom_left,
+            #     bottom_right,
+            #     center,
+            #     radius_squared
+            # )
+            # top_hit = Intersector.intersect_segment_circle(
+            #     top_left,
+            #     top_right,
+            #     center,
+            #     radius_squared
+            # )
+            # left_hit = Intersector.intersect_segment_circle(
+            #     bottom_left,
+            #     top_left,
+            #     center,
+            #     radius_squared
+            # )
+            # right_hit = Intersector.intersect_segment_circle(
+            #     bottom_right,
+            #     top_right,
+            #     center,
+            #     radius_squared
+            # )
 
-            # bottom - top
-            if self.ball.velocity_y > 0 and bottom_hit:
-                self.ball.velocity_y *= -1
-            elif top_hit:
-                self.ball.velocity_y *= -1
+            # # left - right
+            # if self.ball.velocity_x > 0 and left_hit:
+            #     self.ball.velocity_x *= -1
+            # elif self.ball.velocity_x < 0 and right_hit:
+            #     self.ball.velocity_x *= -1
 
-            self.bricks.remove(brick)
+            # # bottom - top
+            # if self.ball.velocity_y > 0 and bottom_hit:
+            #     self.ball.velocity_y *= -1
+            # elif top_hit:
+            #     self.ball.velocity_y *= -1
+
+            # self.bricks.remove(brick)
 
     def activate_ball(self):
         self.ball.set_velocity_by_angled(

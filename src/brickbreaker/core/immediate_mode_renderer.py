@@ -1,136 +1,159 @@
-from .vertex_buffer_layout import VertexBufferLayout
 from .vertex_array import VertexArray
 from .vertex_buffer import VertexBuffer
 from .shader import Shader
 from .color import Color
-import numpy as np
+from .geometry import Geometry
 from OpenGL.GL import *
 
 
-class VertexCounter:
-    def __init__(self, element_count) -> None:
-        self.element_count = element_count
-        self.vertex_id = 0
-        self.num_vertices = 0
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc, exc_tb):
-        self.vertex_id += self.element_count
-        self.num_vertices += 1
-
-    def offset(self, value):
-        return self.vertex_id + value
-
-    def reset(self):
-        self.vertex_id = 0
-        self.num_vertices = 0
-
-
 class ImmediateModeRenderer:
-    COLOR_ATTRIB = "a_color"
-    COLOR_VARY = "v_color"
-    VERTEX_ATTRIB = "a_texture"
-    VERTEX_VARY = "v_texture"
+    # vertex element ids
+
+    # layout
     POSITION_ATTRIB = "a_position"
+    COLOR_ATTRIB = "a_color"
+    TEXCOORD_ATTRIB = "a_tex_coord"
 
-    def __init__(self, max_vertices: int, has_colors: bool, has_texture: bool) -> None:
-        self.has_colors = has_colors
-        self.has_texture = has_texture
+    # uniforms
+    PROJECTION_UNIFORM = "u_projTrans"
+    U_SAMPLER_UNIFORM = "u_sampler"
+
+    # varyings
+    COLOR_VARY = "v_color"
+    TEXCOORD_VARY = "v_tex_coord"
+
+    def __init__(self, max_vertices: int, has_colors: bool, num_text_coords: int) -> None:
+        # data
         self.max_vertices = max_vertices
-        self.proj_model_view = None
-
-        # offsets
-        self.vertex_offset = 0
-        self.color_offset = 0
-        self.texture_offset = 0
+        self.geometry: Geometry = self.create_gemoetry(
+            max_vertices,
+            has_colors,
+            num_text_coords
+        )
 
         # shader
         self.shader = Shader(
-            self.create_vertex_shader(has_colors, has_texture),
-            self.create_fragment_shader(has_colors, has_texture)
+            self.create_vertex_shader(has_colors, num_text_coords),
+            self.create_fragment_shader(has_colors, num_text_coords)
         )
-
-        # vbo layout
-        self.vbo_layout = VertexBufferLayout()
-        self.vbo_layout.push_float(3, self.POSITION_ATTRIB)
-
-        # optional attributes
-        if has_colors:
-            self.color_offset = self.vbo_layout.count
-            self.vbo_layout.push_float(4, self.COLOR_ATTRIB)
-
-        if has_texture:
-            self.texture_offset = self.vbo_layout.count
-            self.vbo_layout.push_float(2, self.VERTEX_ATTRIB)
-
-        self.vertex_counter = VertexCounter(self.vbo_layout.count)
 
         # vbo
-        self.vertices = np.zeros(
-            max_vertices * self.vbo_layout.count,
-            dtype=np.float32
-        )
-
-        self.vbo = VertexBuffer(self.vertices)
+        self.vbo = VertexBuffer(self.geometry.vertices)
 
         # vao
         self.vao = VertexArray()
-        self.vao.add_buffer(self.vbo, self.vbo_layout, self.shader)
+        self.vao.add_buffer(self.vbo, self.geometry.layout, self.shader)
 
-    def contains_vertices(self):
-        return self.vertex_counter.num_vertices > 0
+    @classmethod
+    def create_gemoetry(cls, max_vertices: int, has_colors: bool, num_text_coords: int):
+        gemoetry = Geometry()
 
-    def create_vertex_shader(self, has_colors, has_texture):
-        # color
-        color_attribute = f"in vec4 {self.COLOR_ATTRIB};" if has_colors else ""
-        color_out = f"out vec4 {self.COLOR_VARY};" if has_colors else ""
-        color_assign = f"{self.COLOR_VARY} = {self.COLOR_ATTRIB};" if has_colors else ""
+        # position
+        gemoetry.push_element("position", 2, cls.POSITION_ATTRIB)
 
-        # texture
-        texture_attribute = f"in vec2 {self.VERTEX_ATTRIB};" if has_texture else ""
-        texture_out = f"out vec2 {self.VERTEX_VARY};" if has_texture else ""
-        texture_assign = f"{self.VERTEX_VARY} = {self.VERTEX_ATTRIB};" if has_texture else ""
+        # color (optional)
+        if has_colors:
+            gemoetry.push_element("color", 4, cls.COLOR_ATTRIB)
 
-        return f"""
-            #version 330 core
-            in vec4 {self.POSITION_ATTRIB};
-            {color_attribute}
-            {texture_attribute}
-            {color_out}
-            {texture_out}
-            uniform mat4 u_projTrans;
-            void main()
-            {{
-                gl_Position = u_projTrans * {self.POSITION_ATTRIB};
-                {color_assign}
-                {texture_assign}
-            }}
+        # texture coordinates (optional)
+        for index in range(num_text_coords):
+            gemoetry.push_element(
+                f"texture{index}",
+                2,
+                f"{cls.TEXCOORD_ATTRIB}{index}"
+            )
+
+        gemoetry.finalize(max_vertices)
+        return gemoetry
+
+    @classmethod
+    def create_vertex_shader(cls, has_colors, num_tex_coords):
+        """
+        Procedurally generate a Vertex Shader with support for optional colors
+        and textures.
         """
 
-    def create_fragment_shader(self, has_colors, has_texture):
-        # color
-        color_in = f"in vec4 {self.COLOR_VARY};" if has_colors else ""
-        color_assign = f"{self.COLOR_VARY};" if has_colors else "vec4(1.0);"
+        # version
+        shader = "# version 330 core\n"
 
-        # texture
-        texture_in = f"in vec2 {self.VERTEX_VARY};" if has_texture else ""
-        texture_sampler = "uniform sampler2D s_texture;" if has_texture else ""
-        texture_multiply = f"out_color *= texture(s_texture, {self.VERTEX_VARY});" if has_texture else ""
+        # layout
+        shader += f"in vec4 {cls.POSITION_ATTRIB};\n"
+        if has_colors:
+            shader += f"in vec4 {cls.COLOR_ATTRIB};\n"
+        for index in range(num_tex_coords):
+            shader += f"in vec2 {cls.TEXCOORD_ATTRIB}{index};\n"
 
-        return f"""
-            #version 330 core
-            out vec4 out_color;
-            {color_in}
-            {texture_in}
-            {texture_sampler}
-            void main()
-            {{
-                out_color = {color_assign}
-                {texture_multiply}
-            }};
+        # uniforms
+        shader += f"uniform mat4 {cls.PROJECTION_UNIFORM};\n"
+
+        # varyings
+        if has_colors:
+            shader += f"out vec4 {cls.COLOR_VARY};\n"
+        for index in range(num_tex_coords):
+            shader += f"out vec2 {cls.TEXCOORD_VARY}{index};\n"
+
+        # body
+        shader += "void main(){\n"
+        shader += f"gl_Position = {cls.PROJECTION_UNIFORM} * {cls.POSITION_ATTRIB};\n"
+        if has_colors:
+            shader += f"{cls.COLOR_VARY} = {cls.COLOR_ATTRIB};\n"
+        for index in range(num_tex_coords):
+            shader += f"{cls.TEXCOORD_VARY}{index} = {cls.TEXCOORD_ATTRIB}{index};\n"
+        shader += "gl_PointSize = 1.0;\n"
+        shader += "}"
+
+        return shader
+
+    @classmethod
+    def create_fragment_shader(cls, has_colors, num_tex_coords):
         """
+        Procedurally generate a Fragment Shader with support for optional colors
+        and textures.
+        """
+
+        # version
+        shader = "# version 330 core\n"
+
+        # layout
+        shader += "out vec4 out_color;\n"
+
+        # uniform
+        for index in range(num_tex_coords):
+            shader += f"uniform sampler2D {cls.U_SAMPLER_UNIFORM}{index};\n"
+
+        # varyings
+        if has_colors:
+            shader += f"in vec4 {cls.COLOR_VARY};"
+        for index in range(num_tex_coords):
+            shader += f"in vec2 {cls.TEXCOORD_VARY}{index};\n"
+
+        # body
+        shader += "void main(){\n"
+        if has_colors:
+            shader += f"out_color = {cls.COLOR_VARY}"
+        else:
+            shader += f"out_color = vec4(1, 1, 1, 1)"
+
+        if num_tex_coords > 0:
+            shader += " * "
+        for index in range(num_tex_coords):
+            if index == num_tex_coords - 1:
+                shader += f"texture({cls.U_SAMPLER_UNIFORM}{index}, {cls.TEXCOORD_VARY}{index})"
+            else:
+                shader += f"texture({cls.U_SAMPLER_UNIFORM}{index}, {cls.TEXCOORD_VARY}{index}) * "
+
+        shader += ";}\n"
+
+        return shader
+
+    # ----------
+    # Client API
+    # ----------
+    def has_gemeotry_data(self):
+        return self.geometry.has_data
+
+    def free_vertices_count(self):
+        return self.max_vertices - self.geometry.vertex_count
 
     def begin(self, proj_model_view, primitive_type):
         self.proj_model_view = proj_model_view
@@ -141,44 +164,30 @@ class ImmediateModeRenderer:
         self.flush()
 
     def flush(self):
-        if not self.contains_vertices():
+        if not self.geometry.has_data:
             return
 
         self.vao.bind()
         self.vbo.set_data(
-            self.vertices,
-            self.vertex_counter.num_vertices * self.vbo_layout.stride
+            self.geometry.vertices,
+            self.geometry.size
         )
 
         self.shader.set_uniform_mat4f("u_projTrans", self.proj_model_view)
-        glDrawArrays(self.primitive_type, 0, self.vertex_counter.num_vertices)
-        self.vertex_counter.reset()
-
-    def start_new_vertex(self):
-        return self.vertex_counter
+        glDrawArrays(self.primitive_type, 0, self.geometry.vertex_count)
+        self.geometry.reset()
 
     def color(self, color: Color):
-        assert self.has_colors
-        offset = self.vertex_counter.offset(self.color_offset)
-        self.vertices[offset] = color.r
-        self.vertices[offset + 1] = color.g
-        self.vertices[offset + 2] = color.b
-        self.vertices[offset + 3] = color.a
+        self.geometry.push_data("color", [color.r, color.g, color.b, color.a])
 
-    def texture(self, u: float, v: float):
-        assert self.has_texture
-        offset = self.vertex_counter.offset(self.texture_offset)
-        self.vertices[offset] = u
-        self.vertices[offset + 1] = v
+    def position(self, x: float, y: float):
+        self.geometry.push_data("position", [x, y])
 
-    def vertex(self, x: float, y: float, z: float):
-        idx = self.vertex_counter.offset(self.vertex_offset)
-        self.vertices[idx] = x
-        self.vertices[idx + 1] = y
-        self.vertices[idx + 2] = z
+    def texture_coordinate(self, index: int, u: float, v: float):
+        self.geometry.push_data(f"texture{index}", [u, v])
 
-    def free_vertices_count(self):
-        return self.max_vertices - self.vertex_counter.num_vertices
+    def new_vertex(self):
+        self.geometry.next()
 
     def dispose(self):
         self.vao.delete()

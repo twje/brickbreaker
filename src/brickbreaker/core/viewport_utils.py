@@ -7,7 +7,7 @@ def debug_pixels_per_unit(viewport: FitViewport):
     pass
 
 
-def draw_grid(viewport: FitViewport, renderer: ShapeRenderer):
+def draw_grid(viewport: FitViewport, renderer: ShapeRenderer, draw_world_units=False):
     old_color = renderer.color.copy()
 
     cell_size = 1
@@ -21,13 +21,14 @@ def draw_grid(viewport: FitViewport, renderer: ShapeRenderer):
 
     renderer.color = color.WHITE
 
-    # draw vertical lines
-    for x in range(-double_world_width, double_world_height, cell_size):
-        renderer.line(x, -double_world_height, x, double_world_height)
+    if draw_world_units:
+        # draw vertical lines
+        for x in range(-double_world_width, double_world_height, cell_size):
+            renderer.line(x, -double_world_height, x, double_world_height)
 
-    # draw horizontal lines
-    for y in range(-double_world_height, double_world_height, cell_size):
-        renderer.line(-double_world_width, y, double_world_width, y)
+        # draw horizontal lines
+        for y in range(-double_world_height, double_world_height, cell_size):
+            renderer.line(-double_world_width, y, double_world_width, y)
 
     # draw 0/0 lines
     renderer.color = color.RED

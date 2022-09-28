@@ -39,7 +39,8 @@ class Texture:
     def height(self):
         return self.image.height
 
-    def bind(self):
+    def bind(self, slot: int = 0):
+        glActiveTexture(GL_TEXTURE0 + slot)
         glBindTexture(GL_TEXTURE_2D, self.renderer_id)
 
     def unbind(self):

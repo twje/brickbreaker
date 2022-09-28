@@ -8,7 +8,8 @@ __all__ = [
     "Segment",
     "Circle",
     "Rectangle",
-    "OrientedRectangle"
+    "OrientedRectangle",
+    "Point"
 ]
 
 # Type Aliases
@@ -62,9 +63,41 @@ class Rectangle:
     origin: Vector3 = Vector3()
     size: Vector3 = Vector3()
 
-    def __init__(self, origin: VectorTuple2D = (0, 0), size: float = 0) -> None:
-        self.origin = Vector3([origin[0], origin[1], 0])
-        self.size = Vector3([size[0], size[1], 0])
+    def __init__(self, x: float, y: float, width: float, height: float) -> None:
+        self.origin = Vector3([x, y, 0])
+        self.size = Vector3([width, height, 0])
+
+    @property
+    def x(self):
+        return self.origin.x
+
+    @x.setter
+    def x(self, value: float):
+        self.origin.x = value
+
+    @property
+    def y(self):
+        return self.origin.x
+
+    @y.setter
+    def y(self, value: float):
+        self.origin.y = value
+
+    @property
+    def width(self):
+        return self.size.x
+
+    @width.setter
+    def width(self, value: float):
+        self.size.x = value
+
+    @property
+    def height(self):
+        return self.size.y
+
+    @height.setter
+    def height(self, value: float):
+        self.size.y = value
 
 
 @dataclass

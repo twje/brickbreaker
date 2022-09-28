@@ -90,7 +90,7 @@ class GameRenderer:
         self.viewport.apply(False)
 
         if self.game_world.draw_grid:
-            viewport_utils.draw_grid(self.viewport, self.renderer)
+            viewport_utils.draw_grid(self.viewport, self.renderer, True)
 
         if self.game_world.draw_debug:
             self.renderer.set_projection_matrix(self.camera.combined)
@@ -104,8 +104,10 @@ class GameRenderer:
 
         # background
         background = self.game_world.background
-        shape_render_utils.rect(self.renderer, background.first_region_bounds)
-        shape_render_utils.rect(self.renderer, background.second_region_bounds)
+        shape_render_utils.rectangle(
+            self.renderer, background.first_region_bounds)
+        shape_render_utils.rectangle(
+            self.renderer, background.second_region_bounds)
 
         # paddle
         paddle = self.game_world.paddle

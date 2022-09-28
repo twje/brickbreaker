@@ -9,7 +9,7 @@ class SpriteBatch:
     def __init__(self) -> None:
         self.projection = None
         self.color = Color()
-        self.renderer = ImmediateModeRenderer(5000, True, True)
+        self.renderer = ImmediateModeRenderer(5000, True, 1)
         self.drawing = False
         self.last_texture = None
 
@@ -32,7 +32,7 @@ class SpriteBatch:
         self.last_texture = texture
 
     def flush(self):
-        if self.renderer.contains_vertices():
+        if self.renderer.has_gemeotry_data():
             self.last_texture.bind()
             self.renderer.end()
 
@@ -43,76 +43,50 @@ class SpriteBatch:
             self.flush()
 
     def draw_texture(self, texture: Texture, x: float, y: float, width: float, height: float):
+        self.draw_texture_uv(
+            texture,
+            x,
+            y,
+            width,
+            height,
+            0,
+            0,
+            1,
+            1
+        )
+
+    def draw_texture_region(self, texture_region: TextureRegion, x: float, y: float, width: float, height: float):
+        u1, v1, u2, v2 = texture_region.uv()
+        self.draw_texture_uv(
+            texture_region.texture,
+            x,
+            y,
+            width,
+            height,
+            u1,
+            v1,
+            u2,
+            v2
+        )
+
+    def draw_texture_uv(self, texture: Texture, x: float, y: float, width: float, height: float, u1: float, v1: float, u2: float, v2: float):
         self.check(texture, 6)
 
         # triangle 1
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x, y, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(0.0, 0.0)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x + width, y, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(1.0, 0.0)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x + width, y + height, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(1.0, 1.0)
+        self.add_vertex(x, y, u1, v1)
+        self.add_vertex(x + width, y, u2, v1)
+        self.add_vertex(x + width, y + height, u2, v2)
 
         # triangle 2
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x + width, y + height, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(1.0, 1.0)
+        self.add_vertex(x + width, y + height, u2, v2)
+        self.add_vertex(x, y + height, u1, v2)
+        self.add_vertex(x, y, u1, v1)
 
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x, y + height, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(0.0, 1.0)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x, y, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(0.0, 0.0)
-
-    def draw_texture_region(self, texture_region: TextureRegion, x: float, y: float, width: float, height: float):
-        self.check(texture_region.texture, 6)
-
-        u1, v1, u2, v2 = texture_region.uv()
-
-        # triangle 1
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x, y, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(u1, v1)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x + width, y, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(u2, v1)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x + width, y + height, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(u2, v2)
-
-        # triangle 2
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x + width, y + height, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(u2, v2)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x, y + height, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(u1, v2)
-
-        with self.renderer.start_new_vertex():
-            self.renderer.vertex(x, y, 0)
-            self.renderer.color(self.color)
-            self.renderer.texture(u1, v1)
+    def add_vertex(self, x: float, y: float, u: float, v: float):
+        self.renderer.color(self.color)
+        self.renderer.position(x, y)
+        self.renderer.texture_coordinate(0, u, v)
+        self.renderer.new_vertex()
 
     def dispose(self):
         self.renderer.dispose()

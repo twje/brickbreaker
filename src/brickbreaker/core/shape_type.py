@@ -5,3 +5,4 @@ from OpenGL.GL import *
 class ShapeType(IntEnum):
     Line = GL_LINES
     Filled = GL_TRIANGLES
+    POINT = GL_POINTS
