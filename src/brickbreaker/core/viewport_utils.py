@@ -4,7 +4,18 @@ from . import color
 
 
 def debug_pixels_per_unit(viewport: FitViewport):
-    pass
+    assert viewport is not None
+
+    screen_width = viewport.screen_width
+    screen_height = viewport.screen_height
+
+    world_width = viewport.world_width
+    world_height = viewport.world_height
+
+    xppu = screen_width/world_width
+    yppu = screen_height/world_height
+
+    print(f"xPPU={xppu} yPPU={yppu}")
 
 
 def draw_grid(viewport: FitViewport, renderer: ShapeRenderer, draw_world_units=False):
